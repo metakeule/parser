@@ -80,6 +80,13 @@ func (p *Parser) Next() (rune_ rune) {
 	return
 }
 
+// emit passes an item back to the client
+func (p *Parser) Emit() string {
+	s := p.input[p.start:p.pos]
+	p.start = p.pos
+	return s
+}
+
 func (p *Parser) Ignore() {
 	p.start = p.pos
 }
@@ -143,5 +150,6 @@ func (p *Parser) Run(fn State) (err error) {
 	if err == ErrEOF {
 		return nil
 	}
+
 	return err
 }
