@@ -163,6 +163,9 @@ func (p *Parser) Errorf(format string, args ...interface{}) {
 func (p *Parser) Run(fn State) (err error) {
 	for p.err == nil {
 		fn = fn(p)
+		if fn == nil {
+			break
+		}
 	}
 	if p.err == ErrEOF {
 		return nil
