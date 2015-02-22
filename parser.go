@@ -45,11 +45,12 @@ func (p *Parser) Root() ASTNode {
 	return p.astQueue[0]
 }
 
-func (p *Parser) CurrentNode() ASTNode {
+func (p *Parser) currentNode() ASTNode {
 	return p.astQueue[len(p.astQueue)-1]
 }
 
 func (p *Parser) AddNode(n ASTNode) {
+	p.currentNode().AddChild(n)
 	p.astQueue = append(p.astQueue, n)
 }
 
