@@ -122,6 +122,13 @@ func (p *Parser) AcceptRun(valid string) {
 	p.Backup()
 }
 
+// runs forward until one of the stopper
+func (p *Parser) ForwardUntil(stopper string) {
+	for strings.IndexRune(stopper, p.Next()) == -1 {
+	}
+	p.Backup()
+}
+
 func (p *Parser) Errorf(format string, args ...interface{}) error {
 	start := p.pos - 5
 	if start < 0 {
