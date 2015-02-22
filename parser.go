@@ -35,6 +35,11 @@ type Parser struct {
 	err         error
 }
 
+// QueueLen returns the length of the astQueue
+func (p *Parser) QueueLen() int {
+	return len(p.astQueue)
+}
+
 func New(input string, root ASTNode) *Parser {
 	return &Parser{
 		astQueue: []ASTNode{root},
