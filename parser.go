@@ -34,7 +34,7 @@ type Parser struct {
 	lineposPrev int
 }
 
-func NewParser(input string, root ASTNode) *Parser {
+func New(input string, root ASTNode) *Parser {
 	return &Parser{
 		astQueue: []ASTNode{root},
 		input:    input,
