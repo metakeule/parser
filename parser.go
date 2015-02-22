@@ -63,7 +63,7 @@ func (p *Parser) PopNode() {
 }
 
 func (p *Parser) HasError() bool {
-	return p.err == nil
+	return p.err != nil
 }
 
 func (p *Parser) IsEOF() bool {
