@@ -12,7 +12,7 @@ import (
 )
 
 // last State must return ErrEOF
-type State func(p *Parser) (next State, err error)
+type State func(p *Parser) (next State)
 
 var ErrEOF = errors.New("End of File")
 
@@ -32,6 +32,7 @@ type Parser struct {
 	linepos     int
 	linePrev    int
 	lineposPrev int
+	err         error
 }
 
 func New(input string, root ASTNode) *Parser {
@@ -61,9 +62,18 @@ func (p *Parser) PopNode() {
 	p.astQueue = p.astQueue[:len(p.astQueue)-1]
 }
 
+func (p *Parser) HasError() bool {
+	return p.err == nil || p.err == ErrEOF
+}
+
+func (p *Parser) IsEOF() bool {
+	return p.err == ErrEOF
+}
+
 func (p *Parser) Next() (rune_ rune) {
 	if p.pos >= len(p.input) {
 		p.width = 0
+		p.err = ErrEOF
 		return EOF
 	}
 	rune_, p.width = utf8.DecodeRuneInString(p.input[p.pos:])
@@ -129,7 +139,7 @@ func (p *Parser) ForwardUntil(stopper string) {
 	p.Backup()
 }
 
-func (p *Parser) Errorf(format string, args ...interface{}) error {
+func (p *Parser) Errorf(format string, args ...interface{}) {
 	start := p.pos - 5
 	if start < 0 {
 		start = 0
@@ -141,7 +151,7 @@ func (p *Parser) Errorf(format string, args ...interface{}) error {
 		end = len(p.input)
 	}
 
-	return errors.New(fmt.Sprintf(
+	p.err = errors.New(fmt.Sprintf(
 		"Error in line %d at position %d: %s\ncontext:\n%s\n",
 		p.line+1,
 		p.linepos+1,
@@ -151,10 +161,10 @@ func (p *Parser) Errorf(format string, args ...interface{}) error {
 }
 
 func (p *Parser) Run(fn State) (err error) {
-	for err == nil {
-		fn, err = fn(p)
+	for p.err == nil {
+		fn = fn(p)
 	}
-	if err == ErrEOF {
+	if p.err == ErrEOF {
 		return nil
 	}
 
